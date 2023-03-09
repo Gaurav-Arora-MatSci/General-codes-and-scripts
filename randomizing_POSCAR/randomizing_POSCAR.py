@@ -145,4 +145,4 @@ def randomizing_POSCAR(filename, number_of_elements):
     
     return(types)
 
-randomizing_POSCAR('POSCAR', 4 )
+randomizing_POSCAR('POSCAR_LAMMPS', 2)
