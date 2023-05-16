@@ -15,7 +15,7 @@ print(f'Total structures are {len(structures)}')
 # Define the timesteps for which you want to dump the structures
 timestep_ = 2 #2fs
 first_str_time = 100 #100th fs
-last_str_time = int(input('Enter last structure time in fs'))
+last_str_time = int(input('Enter last structure time in fs (timestep should be considered here): '))
 #last_str_time = 1000 #1000th fs
 interval = 100 #100 fs
 timesteps = np.arange(int((first_str_time)/timestep_), int(((last_str_time)/timestep_)+1), int(interval/timestep_))  # Modify this list according to your desired timesteps
