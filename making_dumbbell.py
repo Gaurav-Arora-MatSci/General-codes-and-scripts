@@ -1,3 +1,7 @@
+#This code is used to create 100, 110 and 111 dumbell around a atom which is input by a user. It takes "CONTCAR_pe" as input file with cartesian coordinates. USer can predefine the type of 
+#interstitial needed in line 56 and 57. List of atom to be deleted or around which dumbell needs to be added is defined in line 83 and type is defined in 84. Please keep in mind tha atom ids
+#added in this code is one less than what is defined by Ovito.
+
 import numpy as np
 import os
 
