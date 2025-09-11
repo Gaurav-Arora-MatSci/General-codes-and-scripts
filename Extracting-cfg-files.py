@@ -17,26 +17,27 @@ The script supports three extraction modes (which can be combined):
                      Example: --config 5 → only the 5th configuration.
 
 2. --last N        : Extract the last N configurations in the file.
-                     Example: --last 20 → last 20 configurations.
+                     If the file has fewer than N configs, it will extract all.
 
 3. --every K       : Extract every K-th configuration.
                      Example: --every 5 → every 5th configuration.
+                     Additionally, the very last configuration is *always* added.
 
 You can also combine options. For example:
     --config 5 --last 20 --every 5
 
 This will extract:
     - The 5th configuration,
-    - The last 20 configurations,
-    - Every 5th configuration,
+    - The last 20 configurations (or all, if <20 exist),
+    - Every 5th configuration (plus always the last one),
 and save them (without duplicates) to the specified output file.
 
 USAGE EXAMPLES:
 ---------------
-Extract every 5th configuration:
+Extract every 5th configuration (plus the last one):
     python extract_cfgs.py --input all_configs.cfg --output every5.cfg --every 5
 
-Extract last 20 configurations:
+Extract last 20 configurations (or all if <20):
     python extract_cfgs.py --input all_configs.cfg --output last20.cfg --last 20
 
 Extract only the 5th configuration:
@@ -82,13 +83,18 @@ def extract_cfgs(input_file, output_file,
     if config_number is not None and 1 <= config_number <= len(configs):
         selected_cfgs.append(configs[config_number - 1])
 
-    # Option 2: Extract last n configs
+    # Option 2: Extract last n configs (if fewer exist, take all)
     if last_n is not None and last_n > 0:
-        selected_cfgs.extend(configs[-last_n:])
+        if last_n >= len(configs):
+            selected_cfgs.extend(configs)  # take all
+        else:
+            selected_cfgs.extend(configs[-last_n:])
 
-    # Option 3: Extract every k-th config
+    # Option 3: Extract every k-th config (always include last one)
     if every_k is not None and every_k > 0:
         selected_cfgs.extend(configs[i] for i in range(0, len(configs), every_k))
+        if configs[-1] not in selected_cfgs:
+            selected_cfgs.append(configs[-1])  # ensure last config included
 
     # Remove duplicates while preserving order
     seen = set()
@@ -115,8 +121,8 @@ if __name__ == "__main__":
     parser.add_argument("--input", required=True, help="Path to input .cfg file")
     parser.add_argument("--output", required=True, help="Path to save extracted configurations")
     parser.add_argument("--config", type=int, help="Extract specific config number (1-based index)")
-    parser.add_argument("--last", type=int, help="Extract last N configs")
-    parser.add_argument("--every", type=int, help="Extract every K-th config")
+    parser.add_argument("--last", type=int, help="Extract last N configs (or all if fewer exist)")
+    parser.add_argument("--every", type=int, help="Extract every K-th config (always includes last one)")
 
     args = parser.parse_args()
 
