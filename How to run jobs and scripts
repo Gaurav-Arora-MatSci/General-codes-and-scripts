@@ -1,0 +1,4 @@
+To run LAMMPS general on NERSC use the following commands
+  module load conda
+ conda activate nersc-lammps
+ srun -n512 lammps-nersc -in lammps_file_name
