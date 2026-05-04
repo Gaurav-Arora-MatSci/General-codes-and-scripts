@@ -4,7 +4,7 @@
 #SBATCH -q regular
 #SBATCH -t 10:00:00
 #SBATCH --output=slurm-%A.out
-#SBATCH --job-name=1stNN
+#SBATCH --job-name=1NNMP5
 #SBATCH --account=m4349
 ##SBATCH --account=m4599
 
@@ -18,8 +18,7 @@ log_file="job.log_${SLURM_JOB_ID}"
 start=$(date +%s.%N)
 
 module load vasp/6.4.3-cpu
-VASP_CMD="srun -n512 -c2 --cpu_bind=cores stdbuf --output=L vasp_std"
-
+VASP_CMD="srun -n512 -c2 --cpu_bind=cores stdbuf --output=L vasp_gam"
 
 
 for d in calc-{0..199}; do
@@ -45,13 +44,19 @@ for d in calc-{0..199}; do
         mtime=$(stat -c %Y OUTCAR)
         diff=$(( now - mtime ))
         if [ "$diff" -lt 120 ]; then
-            echo "$d - still running"
+            echo "$d - still running, skipping"
+            cd ..
+            continue
+        elif [ -s CONTCAR ]; then
+            echo "$d - continuing from CONTCAR"
+            cp CONTCAR POSCAR
+            $VASP_CMD
         else
             echo "$d - check manually"
         fi
-	rm PROCAR *.xml DOSCAR EIGENVAL *.h5
     fi
 
+    rm -f PROCAR *.xml DOSCAR EIGENVAL *.h5
     cd ..
 done
 
